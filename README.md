@@ -20,4 +20,8 @@ An Android app for limiting app usage and reducing short-video addiction.
 
 ## Version
 
-v0.1 - timer base version
+v0.1 - timer base  
+v0.2 - show installed apps  
+v0.3 - filter user apps  
+v0.4 - add package query permission  
+v0.5 - detect current foreground app using UsageStatsManager
