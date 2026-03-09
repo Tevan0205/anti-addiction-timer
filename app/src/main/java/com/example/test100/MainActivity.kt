@@ -133,7 +133,15 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
         Button(
             onClick = {
-                monitoring = true
+
+                val intent =
+                    Intent(
+                        context,
+                        MonitorService::class.java
+                    )
+
+                context.startService(intent)
+
             }
         ) {
             Text("開始監控")

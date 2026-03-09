@@ -21,6 +21,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Test100">
 
+        <service
+            android:name=".MonitorService"
+            android:exported="false"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
