@@ -12,8 +12,6 @@ class MonitorService : Service() {
 
     private var seconds = 0
 
-    private val limit = 10
-
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
@@ -24,22 +22,35 @@ class MonitorService : Service() {
 
             while (true) {
 
-                val app =
-                    UsageHelper.getCurrentApp(this@MonitorService)
-
                 val prefs =
                     getSharedPreferences(
                         "settings",
                         MODE_PRIVATE
                     )
 
+                val app =
+                    UsageHelper.getCurrentApp(this@MonitorService)
+
+                val limit =
+                    prefs.getString(
+                        "limit",
+                        "10"
+                    )?.toIntOrNull() ?: 10
+
+                val selected =
+                    prefs.getStringSet(
+                        "apps",
+                        emptySet()
+                    ) ?: emptySet()
+
                 prefs.edit()
-                    .putString("currentApp", app)
+                    .putString(
+                        "currentApp",
+                        app
+                    )
                     .apply()
 
-                if (app.contains("instagram")
-                    || app.contains("youtube")
-                ) {
+                if (selected.contains(app)) {
 
                     seconds++
 
@@ -49,7 +60,9 @@ class MonitorService : Service() {
 
                 }
 
-                if (seconds >= limit) {
+                if (seconds >= limit &&
+                    selected.contains(app)
+                ) {
 
                     val home =
                         Intent(Intent.ACTION_MAIN)
