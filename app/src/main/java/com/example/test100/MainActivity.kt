@@ -63,7 +63,16 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
         )
 
     val selected = remember {
-        mutableStateListOf<String>()
+
+        mutableStateListOf<String>().apply {
+
+            val saved =
+                prefs.getStringSet("apps", emptySet())!!
+
+            addAll(saved)
+
+        }
+
     }
 
     var currentApp by remember {
@@ -162,6 +171,13 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
                             } else {
                                 selected.remove(app.packageName)
                             }
+
+                            prefs.edit()
+                                .putStringSet(
+                                    "apps",
+                                    selected.toSet()
+                                )
+                                .apply()
 
                         }
                     )
