@@ -71,18 +71,19 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
         mutableStateOf(0)
     }
 
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+
     val limit = 10
 
     Column {
 
         Button(
             onClick = {
-
                 val intent =
                     Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-
                 context.startActivity(intent)
-
             }
         ) {
             Text("開啟權限")
@@ -109,22 +110,13 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
         Text("使用時間: $seconds 秒")
 
-        if (seconds >= limit && restricted) {
-            Text(
-                "⚠ 超過限制！",
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
         LazyColumn(
             modifier = Modifier.height(300.dp)
         ) {
 
             items(apps) { app ->
 
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                Row {
 
                     Checkbox(
                         checked =
@@ -151,6 +143,35 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
     }
 
+    if (showDialog) {
+
+        AlertDialog(
+            onDismissRequest = { },
+
+            confirmButton = {
+
+                Button(
+                    onClick = {
+                        showDialog = false
+                        seconds = 0
+                    }
+                ) {
+                    Text("知道了")
+                }
+
+            },
+
+            title = {
+                Text("超過限制")
+            },
+
+            text = {
+                Text("請停止使用此App")
+            }
+        )
+
+    }
+
     if (monitoring) {
 
         LaunchedEffect(Unit) {
@@ -166,6 +187,10 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
                     seconds++
                 } else {
                     seconds = 0
+                }
+
+                if (seconds >= limit && selected.contains(app)) {
+                    showDialog = true
                 }
 
                 delay(1000)
