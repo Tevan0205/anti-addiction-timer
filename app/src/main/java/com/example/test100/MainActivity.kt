@@ -67,6 +67,10 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
         mutableStateOf(false)
     }
 
+    var seconds by remember {
+        mutableStateOf(0)
+    }
+
     Column {
 
         Button(
@@ -92,11 +96,16 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
         Text("現在使用: $currentApp")
 
-        if (selected.contains(currentApp)) {
+        val restricted =
+            selected.contains(currentApp)
+
+        if (restricted) {
             Text("受限制: YES")
         } else {
             Text("受限制: NO")
         }
+
+        Text("使用時間: $seconds 秒")
 
         LazyColumn(
             modifier = Modifier.height(300.dp)
@@ -139,8 +148,16 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
             while (true) {
 
-                currentApp =
+                val app =
                     UsageHelper.getCurrentApp(context)
+
+                currentApp = app
+
+                if (selected.contains(app)) {
+                    seconds++
+                } else {
+                    seconds = 0
+                }
 
                 delay(1000)
 
