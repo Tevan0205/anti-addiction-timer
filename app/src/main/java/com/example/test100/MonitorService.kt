@@ -27,6 +27,16 @@ class MonitorService : Service() {
                 val app =
                     UsageHelper.getCurrentApp(this@MonitorService)
 
+                val prefs =
+                    getSharedPreferences(
+                        "settings",
+                        MODE_PRIVATE
+                    )
+
+                prefs.edit()
+                    .putString("currentApp", app)
+                    .apply()
+
                 if (app.contains("instagram")
                     || app.contains("youtube")
                 ) {

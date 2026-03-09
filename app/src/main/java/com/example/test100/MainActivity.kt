@@ -6,14 +6,11 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.example.test100.ui.theme.Test100Theme
 import kotlinx.coroutines.delay
 
@@ -22,114 +19,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val apps = getLaunchableApps()
-
         setContent {
             Test100Theme {
-                MonitorWithListScreen(apps)
+                MonitorScreen()
             }
         }
-    }
-
-    private fun getLaunchableApps(): List<AppInfo> {
-
-        val pm = packageManager
-
-        val intent = Intent(Intent.ACTION_MAIN, null)
-        intent.addCategory(Intent.CATEGORY_LAUNCHER)
-
-        val resolveInfos = pm.queryIntentActivities(intent, 0)
-
-        return resolveInfos.map {
-
-            AppInfo(
-                name = it.loadLabel(pm).toString(),
-                packageName = it.activityInfo.packageName
-            )
-
-        }.sortedBy { it.name }
     }
 }
 
 @Composable
-fun MonitorWithListScreen(apps: List<AppInfo>) {
+fun MonitorScreen() {
 
     val context = LocalContext.current
-
-    val prefs =
-        context.getSharedPreferences(
-            "settings",
-            Context.MODE_PRIVATE
-        )
-
-    val selected = remember {
-
-        mutableStateListOf<String>().apply {
-
-            val saved =
-                prefs.getStringSet("apps", emptySet())!!
-
-            addAll(saved)
-
-        }
-
-    }
 
     var currentApp by remember {
         mutableStateOf("unknown")
     }
 
-    var monitoring by remember {
-        mutableStateOf(false)
-    }
-
-    var seconds by remember {
-        mutableStateOf(0)
-    }
-
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-
-    var limitText by remember {
-
-        mutableStateOf(
-            prefs.getString("limit", "10") ?: "10"
-        )
-
-    }
-
-    val limit =
-        limitText.toIntOrNull() ?: 10
-
     Column {
-
-        OutlinedTextField(
-            value = limitText,
-            onValueChange = {
-
-                limitText = it
-
-                prefs.edit()
-                    .putString("limit", it)
-                    .apply()
-
-            },
-            label = { Text("限制秒數") }
-        )
-
-        Button(
-            onClick = {
-
-                val intent =
-                    Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-
-                context.startActivity(intent)
-
-            }
-        ) {
-            Text("開啟權限")
-        }
 
         Button(
             onClick = {
@@ -147,122 +54,45 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
             Text("開始監控")
         }
 
-        Text("現在使用: $currentApp")
+        Button(
+            onClick = {
 
-        val restricted =
-            selected.contains(currentApp)
+                val intent =
+                    Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
 
-        if (restricted) {
-            Text("受限制: YES")
-        } else {
-            Text("受限制: NO")
-        }
+                context.startActivity(intent)
 
-        Text("使用時間: $seconds 秒")
-
-        LazyColumn(
-            modifier = Modifier.height(300.dp)
+            }
         ) {
-
-            items(apps) { app ->
-
-                Row {
-
-                    Checkbox(
-                        checked =
-                            selected.contains(app.packageName),
-
-                        onCheckedChange = {
-
-                            if (it) {
-                                selected.add(app.packageName)
-                            } else {
-                                selected.remove(app.packageName)
-                            }
-
-                            prefs.edit()
-                                .putStringSet(
-                                    "apps",
-                                    selected.toSet()
-                                )
-                                .apply()
-
-                        }
-                    )
-
-                    Text(app.name)
-
-                }
-
-            }
-
+            Text("開啟權限")
         }
 
-    }
-
-    if (showDialog) {
-
-        AlertDialog(
-            onDismissRequest = { },
-
-            confirmButton = {
-
-                Button(
-                    onClick = {
-                        showDialog = false
-                        seconds = 0
-                    }
-                ) {
-                    Text("知道了")
-                }
-
-            },
-
-            title = {
-                Text("超過限制")
-            },
-
-            text = {
-                Text("已強制返回桌面")
-            }
+        Text(
+            text = "現在使用: $currentApp"
         )
 
     }
 
-    if (monitoring) {
+    LaunchedEffect(Unit) {
 
-        LaunchedEffect(Unit) {
+        val prefs =
+            context.getSharedPreferences(
+                "settings",
+                Context.MODE_PRIVATE
+            )
 
-            while (true) {
+        while (true) {
 
-                val app =
-                    UsageHelper.getCurrentApp(context)
+            currentApp =
+                prefs.getString(
+                    "currentApp",
+                    "none"
+                ) ?: "none"
 
-                currentApp = app
-
-                if (selected.contains(app)) {
-                    seconds++
-                } else {
-                    seconds = 0
-                }
-
-                if (seconds >= limit && selected.contains(app)) {
-
-                    showDialog = true
-
-                    val intent = Intent(Intent.ACTION_MAIN)
-                    intent.addCategory(Intent.CATEGORY_HOME)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-                    context.startActivity(intent)
-
-                }
-
-                delay(1000)
-
-            }
+            delay(1000)
 
         }
 
     }
+
 }
