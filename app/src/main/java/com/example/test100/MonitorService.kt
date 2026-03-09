@@ -10,6 +10,10 @@ class MonitorService : Service() {
     private val scope =
         CoroutineScope(Dispatchers.Default)
 
+    private var seconds = 0
+
+    private val limit = 10
+
     override fun onStartCommand(
         intent: Intent?,
         flags: Int,
@@ -23,7 +27,33 @@ class MonitorService : Service() {
                 val app =
                     UsageHelper.getCurrentApp(this@MonitorService)
 
-                println("Current app: $app")
+                if (app.contains("instagram")
+                    || app.contains("youtube")
+                ) {
+
+                    seconds++
+
+                } else {
+
+                    seconds = 0
+
+                }
+
+                if (seconds >= limit) {
+
+                    val home =
+                        Intent(Intent.ACTION_MAIN)
+
+                    home.addCategory(
+                        Intent.CATEGORY_HOME
+                    )
+
+                    home.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK
+
+                    startActivity(home)
+
+                }
 
                 delay(1000)
 
