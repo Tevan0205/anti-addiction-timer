@@ -1,5 +1,6 @@
 package com.example.test100
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -55,6 +56,12 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
     val context = LocalContext.current
 
+    val prefs =
+        context.getSharedPreferences(
+            "settings",
+            Context.MODE_PRIVATE
+        )
+
     val selected = remember {
         mutableStateListOf<String>()
     }
@@ -76,7 +83,11 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
     }
 
     var limitText by remember {
-        mutableStateOf("10")
+
+        mutableStateOf(
+            prefs.getString("limit", "10") ?: "10"
+        )
+
     }
 
     val limit =
@@ -86,15 +97,26 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
 
         OutlinedTextField(
             value = limitText,
-            onValueChange = { limitText = it },
+            onValueChange = {
+
+                limitText = it
+
+                prefs.edit()
+                    .putString("limit", it)
+                    .apply()
+
+            },
             label = { Text("限制秒數") }
         )
 
         Button(
             onClick = {
+
                 val intent =
                     Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+
                 context.startActivity(intent)
+
             }
         ) {
             Text("開啟權限")
