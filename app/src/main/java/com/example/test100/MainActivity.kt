@@ -47,7 +47,10 @@ class MainActivity : ComponentActivity() {
                 val isSystem =
                     (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0
 
-                !isSystem
+                val isUpdatedSystem =
+                    (it.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+
+                !isSystem || isUpdatedSystem
 
             }
             .map {
