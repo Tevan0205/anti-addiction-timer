@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.test100.ui.theme.Test100Theme
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
 
@@ -19,19 +20,23 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             Test100Theme {
-                CurrentAppScreen()
+                MonitorScreen()
             }
         }
     }
 }
 
 @Composable
-fun CurrentAppScreen() {
+fun MonitorScreen() {
 
     val context = LocalContext.current
 
     var currentApp by remember {
         mutableStateOf("unknown")
+    }
+
+    var monitoring by remember {
+        mutableStateOf(false)
     }
 
     Column {
@@ -46,23 +51,39 @@ fun CurrentAppScreen() {
 
             }
         ) {
-            Text("開啟使用情況存取權限")
+            Text("開啟使用情況權限")
         }
 
         Button(
             onClick = {
 
-                currentApp =
-                    UsageHelper.getCurrentApp(context)
+                monitoring = true
 
             }
         ) {
-            Text("取得目前App")
+            Text("開始監控")
         }
 
         Text(
             text = "現在使用中: $currentApp"
         )
+
+    }
+
+    if (monitoring) {
+
+        LaunchedEffect(Unit) {
+
+            while (true) {
+
+                currentApp =
+                    UsageHelper.getCurrentApp(context)
+
+                delay(1000)
+
+            }
+
+        }
 
     }
 
