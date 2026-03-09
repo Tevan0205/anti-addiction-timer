@@ -75,9 +75,20 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
         mutableStateOf(false)
     }
 
-    val limit = 10
+    var limitText by remember {
+        mutableStateOf("10")
+    }
+
+    val limit =
+        limitText.toIntOrNull() ?: 10
 
     Column {
+
+        OutlinedTextField(
+            value = limitText,
+            onValueChange = { limitText = it },
+            label = { Text("限制秒數") }
+        )
 
         Button(
             onClick = {
