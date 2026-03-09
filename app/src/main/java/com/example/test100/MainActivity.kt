@@ -166,7 +166,7 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
             },
 
             text = {
-                Text("請停止使用此App")
+                Text("已強制返回桌面")
             }
         )
 
@@ -190,7 +190,15 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
                 }
 
                 if (seconds >= limit && selected.contains(app)) {
+
                     showDialog = true
+
+                    val intent = Intent(Intent.ACTION_MAIN)
+                    intent.addCategory(Intent.CATEGORY_HOME)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+                    context.startActivity(intent)
+
                 }
 
                 delay(1000)
