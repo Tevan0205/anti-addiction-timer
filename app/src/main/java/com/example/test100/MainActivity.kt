@@ -1,5 +1,6 @@
 package com.example.test100
 
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -35,15 +36,27 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun getInstalledApps(): List<AppInfo> {
+
         val pm = packageManager
+
         val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
 
         return packages
+            .filter {
+
+                val isSystem =
+                    (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+                !isSystem
+
+            }
             .map {
+
                 AppInfo(
                     name = pm.getApplicationLabel(it).toString(),
                     packageName = it.packageName
                 )
+
             }
             .sortedBy { it.name.lowercase() }
     }
@@ -51,9 +64,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppListScreen(apps: List<AppInfo>) {
+
     val selected = remember { mutableStateListOf<String>() }
 
     Column {
+
         Text(
             text = "選擇要限制的App",
             style = MaterialTheme.typography.headlineSmall,
@@ -61,22 +76,25 @@ fun AppListScreen(apps: List<AppInfo>) {
         )
 
         LazyColumn {
+
             items(apps) { app ->
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
+
                     Checkbox(
                         checked = selected.contains(app.packageName),
                         onCheckedChange = { isChecked ->
+
                             if (isChecked) {
-                                if (!selected.contains(app.packageName)) {
-                                    selected.add(app.packageName)
-                                }
+                                selected.add(app.packageName)
                             } else {
                                 selected.remove(app.packageName)
                             }
+
                         }
                     )
 
@@ -84,8 +102,12 @@ fun AppListScreen(apps: List<AppInfo>) {
                         text = app.name,
                         modifier = Modifier.padding(top = 14.dp)
                     )
+
                 }
+
             }
+
         }
+
     }
 }
