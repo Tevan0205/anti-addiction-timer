@@ -20,6 +20,11 @@ class MonitorService : Service() {
 
             while (true) {
 
+                val app =
+                    UsageHelper.getCurrentApp(this@MonitorService)
+
+                println("Current app: $app")
+
                 delay(1000)
 
             }
