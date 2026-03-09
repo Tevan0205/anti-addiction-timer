@@ -1,6 +1,6 @@
 package com.example.test100
 
-import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val apps = getLaunchableApps()
+        val apps = getUserApps()
 
         setContent {
             Test100Theme {
@@ -35,21 +35,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getLaunchableApps(): List<AppInfo> {
+    private fun getUserApps(): List<AppInfo> {
 
         val pm = packageManager
 
-        val intent = Intent(Intent.ACTION_MAIN, null)
-        intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        val packages =
+            pm.getInstalledApplications(PackageManager.GET_META_DATA)
 
-        val resolveInfos = pm.queryIntentActivities(intent, 0)
+        return packages
+            .filter {
 
-        return resolveInfos
+                val hasIcon = it.icon != 0
+
+                val isSystem =
+                    (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+                hasIcon && !isSystem
+
+            }
             .map {
 
                 AppInfo(
-                    name = it.loadLabel(pm).toString(),
-                    packageName = it.activityInfo.packageName
+                    name = pm.getApplicationLabel(it).toString(),
+                    packageName = it.packageName
                 )
 
             }
