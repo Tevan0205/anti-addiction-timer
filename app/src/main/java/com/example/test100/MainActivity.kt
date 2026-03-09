@@ -71,6 +71,8 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
         mutableStateOf(0)
     }
 
+    val limit = 10
+
     Column {
 
         Button(
@@ -106,6 +108,13 @@ fun MonitorWithListScreen(apps: List<AppInfo>) {
         }
 
         Text("使用時間: $seconds 秒")
+
+        if (seconds >= limit && restricted) {
+            Text(
+                "⚠ 超過限制！",
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         LazyColumn(
             modifier = Modifier.height(300.dp)
