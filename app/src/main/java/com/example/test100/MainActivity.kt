@@ -1,89 +1,91 @@
 package com.example.test100
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
+import com.example.test100.ui.theme.Test100Theme
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val apps = getInstalledApps()
+
         setContent {
-            TimerApp()
+            Test100Theme {
+                AppListScreen(apps)
+            }
         }
+    }
+
+    private fun getInstalledApps(): List<AppInfo> {
+        val pm = packageManager
+        val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
+
+        return packages
+            .map {
+                AppInfo(
+                    name = pm.getApplicationLabel(it).toString(),
+                    packageName = it.packageName
+                )
+            }
+            .sortedBy { it.name.lowercase() }
     }
 }
 
 @Composable
-fun TimerApp() {
+fun AppListScreen(apps: List<AppInfo>) {
+    val selected = remember { mutableStateListOf<String>() }
 
-    var minutesText by remember { mutableStateOf("1") }
-    var secondsLeft by remember { mutableStateOf(0) }
-    var running by remember { mutableStateOf(false) }
-    var showWarning by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier.padding(20.dp)
-    ) {
-
-        Text("防沉迷測試", style = MaterialTheme.typography.headlineSmall)
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedTextField(
-            value = minutesText,
-            onValueChange = { minutesText = it },
-            label = { Text("分鐘") }
+    Column {
+        Text(
+            text = "選擇要限制的App",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(16.dp)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        LazyColumn {
+            items(apps) { app ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Checkbox(
+                        checked = selected.contains(app.packageName),
+                        onCheckedChange = { isChecked ->
+                            if (isChecked) {
+                                if (!selected.contains(app.packageName)) {
+                                    selected.add(app.packageName)
+                                }
+                            } else {
+                                selected.remove(app.packageName)
+                            }
+                        }
+                    )
 
-        Button(
-            onClick = {
-                val m = minutesText.toIntOrNull() ?: 0
-                secondsLeft = m * 60
-                running = true
-                showWarning = false
+                    Text(
+                        text = app.name,
+                        modifier = Modifier.padding(top = 14.dp)
+                    )
+                }
             }
-        ) {
-            Text("開始")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text("剩餘秒數: $secondsLeft")
-
-        if (showWarning) {
-            Text(
-                "時間到！不要再滑短影片了！",
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-    }
-
-    if (running) {
-        LaunchedEffect(secondsLeft) {
-
-            if (secondsLeft > 0) {
-
-                delay(1000)
-
-                secondsLeft--
-
-            } else {
-
-                running = false
-                showWarning = true
-
-            }
-
         }
     }
 }
