@@ -7,6 +7,10 @@ import kotlinx.coroutines.*
 
 class MonitorService : Service() {
 
+    companion object {
+        var isRunning = false
+    }
+
     private val scope =
         CoroutineScope(Dispatchers.Default)
 
@@ -17,6 +21,12 @@ class MonitorService : Service() {
         flags: Int,
         startId: Int
     ): Int {
+
+        if (isRunning) {
+            return START_STICKY
+        }
+
+        isRunning = true
 
         scope.launch {
 
@@ -68,8 +78,7 @@ class MonitorService : Service() {
                         Intent(Intent.ACTION_MAIN)
 
                     home.addCategory(
-                        Intent.CATEGORY_HOME
-                    )
+                        Intent.CATEGORY_HOME)
 
                     home.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK
@@ -87,8 +96,12 @@ class MonitorService : Service() {
         return START_STICKY
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        isRunning = false
+    }
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
-
 }
