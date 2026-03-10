@@ -1,15 +1,13 @@
 package com.example.test100
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
-import android.widget.Toast
-import kotlinx.coroutines.*
 
 class MyAccessibilityService : AccessibilityService() {
-
-    private val scope =
-        CoroutineScope(Dispatchers.Default)
 
     private var currentApp = ""
 
@@ -18,12 +16,13 @@ class MyAccessibilityService : AccessibilityService() {
     private val warningTime = 5
     private val limitTime = 10
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
+    private val handler =
+        Handler(Looper.getMainLooper())
 
-        scope.launch {
+    private val timerRunnable =
+        object : Runnable {
 
-            while (true) {
+            override fun run() {
 
                 val prefs =
                     getSharedPreferences(
@@ -54,16 +53,6 @@ class MyAccessibilityService : AccessibilityService() {
 
                 }
 
-                if (seconds == warningTime) {
-
-                    Toast.makeText(
-                        this@MyAccessibilityService,
-                        "快到時間",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                }
-
                 if (seconds >= limitTime &&
                     selected.contains(currentApp)
                 ) {
@@ -82,9 +71,29 @@ class MyAccessibilityService : AccessibilityService() {
 
                 }
 
-                delay(1000)
+                handler.postDelayed(
+                    this,
+                    1000
+                )
             }
         }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+
+        val info = AccessibilityServiceInfo()
+
+        info.eventTypes =
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+
+        info.feedbackType =
+            AccessibilityServiceInfo.FEEDBACK_GENERIC
+
+        info.notificationTimeout = 100
+
+        serviceInfo = info
+
+        handler.post(timerRunnable)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
