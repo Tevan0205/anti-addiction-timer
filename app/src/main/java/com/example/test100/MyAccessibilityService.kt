@@ -53,7 +53,40 @@ class MyAccessibilityService : AccessibilityService() {
 
                 }
 
-                if (seconds >= limitTime &&
+                if (selected.contains(currentApp)) {
+
+                    seconds++
+
+                } else {
+
+                    seconds = 0
+
+                }
+
+                if (seconds == warningTime) {
+
+                    showWarningNotification()
+
+                }
+
+                if (selected.contains(currentApp)) {
+
+                    seconds++
+
+                } else {
+
+                    seconds = 0
+
+                }
+
+                if (seconds == warningTime) {
+
+                    showWarningNotification()
+
+                }
+
+                if (
+                    seconds >= limitTime &&
                     selected.contains(currentApp)
                 ) {
 
@@ -105,6 +138,42 @@ class MyAccessibilityService : AccessibilityService() {
                 ?: return
 
         currentApp = pkg
+    }
+
+    private fun showWarningNotification() {
+
+        val manager =
+            getSystemService(
+                NOTIFICATION_SERVICE
+            ) as android.app.NotificationManager
+
+        val channelId = "warn"
+
+        val channel =
+            android.app.NotificationChannel(
+                channelId,
+                "warning",
+                android.app.NotificationManager.IMPORTANCE_DEFAULT
+            )
+
+        manager.createNotificationChannel(channel)
+
+        val notification =
+            android.app.Notification.Builder(
+                this,
+                channelId
+            )
+                .setContentTitle("時間快到了")
+                .setContentText("請準備離開")
+                .setSmallIcon(
+                    android.R.drawable.ic_dialog_alert
+                )
+                .build()
+
+        manager.notify(
+            1,
+            notification
+        )
     }
 
     override fun onInterrupt() {}
