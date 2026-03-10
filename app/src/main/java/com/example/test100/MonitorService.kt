@@ -1,8 +1,9 @@
 package com.example.test100
 
-import android.app.Service
+import android.app.*
 import android.content.Intent
 import android.os.IBinder
+import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.*
 
 class MonitorService : Service() {
@@ -15,6 +16,43 @@ class MonitorService : Service() {
         CoroutineScope(Dispatchers.Default)
 
     private var seconds = 0
+
+    override fun onCreate() {
+        super.onCreate()
+
+        val channelId = "monitor_channel"
+
+        val channel =
+            NotificationChannel(
+                channelId,
+                "Monitor",
+                NotificationManager.IMPORTANCE_LOW
+            )
+
+        val manager =
+            getSystemService(
+                NotificationManager::class.java
+            )
+
+        manager.createNotificationChannel(channel)
+
+        val notification =
+            NotificationCompat.Builder(
+                this,
+                channelId
+            )
+                .setContentTitle("防沉迷監控中")
+                .setContentText("Service running")
+                .setSmallIcon(
+                    android.R.drawable.ic_media_play
+                )
+                .build()
+
+        startForeground(
+            1,
+            notification
+        )
+    }
 
     override fun onStartCommand(
         intent: Intent?,
@@ -39,7 +77,9 @@ class MonitorService : Service() {
                     )
 
                 val app =
-                    UsageHelper.getCurrentApp(this@MonitorService)
+                    UsageHelper.getCurrentApp(
+                        this@MonitorService
+                    )
 
                 val limit =
                     prefs.getString(
@@ -61,13 +101,9 @@ class MonitorService : Service() {
                     .apply()
 
                 if (selected.contains(app)) {
-
                     seconds++
-
                 } else {
-
                     seconds = 0
-
                 }
 
                 if (seconds >= limit &&
@@ -78,19 +114,17 @@ class MonitorService : Service() {
                         Intent(Intent.ACTION_MAIN)
 
                     home.addCategory(
-                        Intent.CATEGORY_HOME)
+                        Intent.CATEGORY_HOME
+                    )
 
                     home.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK
 
                     startActivity(home)
-
                 }
 
                 delay(1000)
-
             }
-
         }
 
         return START_STICKY
