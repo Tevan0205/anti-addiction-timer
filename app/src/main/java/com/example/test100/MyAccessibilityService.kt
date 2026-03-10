@@ -16,6 +16,8 @@ class MyAccessibilityService : AccessibilityService() {
     private val warningTime = 5
     private val limitTime = 10
 
+    private var timerStarted = false
+
     private val handler =
         Handler(Looper.getMainLooper())
 
@@ -126,7 +128,10 @@ class MyAccessibilityService : AccessibilityService() {
 
         serviceInfo = info
 
-        handler.post(timerRunnable)
+        if (!timerStarted) {
+            timerStarted = true
+            handler.post(timerRunnable)
+        }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
