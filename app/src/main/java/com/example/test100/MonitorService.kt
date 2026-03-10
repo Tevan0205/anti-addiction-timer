@@ -1,6 +1,9 @@
 package com.example.test100
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -20,7 +23,7 @@ class MonitorService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        val channelId = "monitor_channel"
+        val channelId = "monitor"
 
         val channel =
             NotificationChannel(
@@ -36,12 +39,12 @@ class MonitorService : Service() {
 
         manager.createNotificationChannel(channel)
 
-        val notification =
+        val notification: Notification =
             NotificationCompat.Builder(
                 this,
                 channelId
             )
-                .setContentTitle("防沉迷監控中")
+                .setContentTitle("監控中")
                 .setContentText("Service running")
                 .setSmallIcon(
                     android.R.drawable.ic_media_play
@@ -60,9 +63,7 @@ class MonitorService : Service() {
         startId: Int
     ): Int {
 
-        if (isRunning) {
-            return START_STICKY
-        }
+        if (isRunning) return START_STICKY
 
         isRunning = true
 

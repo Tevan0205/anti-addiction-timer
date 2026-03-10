@@ -20,7 +20,8 @@
 
         <service
             android:name=".MonitorService"
-            android:exported="false"/>
+            android:exported="false"
+            android:foregroundServiceType="specialUse"/>
 
         <activity
             android:name=".MainActivity"
