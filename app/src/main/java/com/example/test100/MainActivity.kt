@@ -153,6 +153,21 @@ fun MonitorScreen(apps: List<AppInfo>) {
             Text("開權限")
         }
 
+        Button(
+            onClick = {
+
+                val intent =
+                    Intent(
+                        Settings.ACTION_ACCESSIBILITY_SETTINGS
+                    )
+
+                context.startActivity(intent)
+
+            }
+        ) {
+            Text("開啟無障礙")
+        }
+
         Text("現在使用: $currentApp")
 
         LazyColumn(
