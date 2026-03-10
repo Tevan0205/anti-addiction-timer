@@ -58,6 +58,22 @@ fun MonitorScreen() {
             onClick = {
 
                 val intent =
+                    Intent(
+                        context,
+                        MonitorService::class.java
+                    )
+
+                context.stopService(intent)
+
+            }
+        ) {
+            Text("停止監控")
+        }
+
+        Button(
+            onClick = {
+
+                val intent =
                     Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
 
                 context.startActivity(intent)
