@@ -115,7 +115,7 @@ fun MonitorScreen(apps: List<AppInfo>) {
                         MonitorService::class.java
                     )
 
-                context.startForegroundService(intent)
+                context.startService(intent)
 
             }
         ) {
