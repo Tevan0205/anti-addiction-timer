@@ -45,23 +45,13 @@ class MyAccessibilityService : AccessibilityService() {
                     )
                     .apply()
 
-                if (selected.contains(currentApp)) {
-
-                    seconds++
-
-                } else {
+                if (!selected.contains(currentApp)) {
 
                     seconds = 0
 
-                }
-
-                if (selected.contains(currentApp)) {
-
-                    seconds++
-
                 } else {
 
-                    seconds = 0
+                    seconds++
 
                 }
 
@@ -71,26 +61,7 @@ class MyAccessibilityService : AccessibilityService() {
 
                 }
 
-                if (selected.contains(currentApp)) {
-
-                    seconds++
-
-                } else {
-
-                    seconds = 0
-
-                }
-
-                if (seconds == warningTime) {
-
-                    showWarningNotification()
-
-                }
-
-                if (
-                    seconds >= limitTime &&
-                    selected.contains(currentApp)
-                ) {
+                if (seconds >= limitTime) {
 
                     val home =
                         Intent(Intent.ACTION_MAIN)
@@ -104,6 +75,7 @@ class MyAccessibilityService : AccessibilityService() {
 
                     startActivity(home)
 
+                    seconds = 0
                 }
 
                 handler.postDelayed(
