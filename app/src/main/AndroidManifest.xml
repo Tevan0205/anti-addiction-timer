@@ -19,10 +19,6 @@
         android:theme="@style/Theme.Test100">
 
         <service
-            android:name=".MonitorService"
-            android:exported="false"/>
-
-        <service
             android:name=".MyAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
@@ -43,10 +39,10 @@
             android:theme="@style/Theme.Test100">
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
                 <category
-                    android:name="android.intent.category.LAUNCHER" />
+                    android:name="android.intent.category.LAUNCHER"/>
 
             </intent-filter>
 

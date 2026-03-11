@@ -111,53 +111,6 @@ fun MonitorScreen(apps: List<AppInfo>) {
 
                 val intent =
                     Intent(
-                        context,
-                        MonitorService::class.java
-                    )
-
-                context.startService(intent)
-
-            }
-        ) {
-            Text("開始監控")
-        }
-
-        Button(
-            onClick = {
-
-                val intent =
-                    Intent(
-                        context,
-                        MonitorService::class.java
-                    )
-
-                context.stopService(intent)
-
-            }
-        ) {
-            Text("停止監控")
-        }
-
-        Button(
-            onClick = {
-
-                val intent =
-                    Intent(
-                        Settings.ACTION_USAGE_ACCESS_SETTINGS
-                    )
-
-                context.startActivity(intent)
-
-            }
-        ) {
-            Text("開權限")
-        }
-
-        Button(
-            onClick = {
-
-                val intent =
-                    Intent(
                         Settings.ACTION_ACCESSIBILITY_SETTINGS
                     )
 
