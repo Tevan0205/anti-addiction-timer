@@ -72,6 +72,12 @@ fun MonitorScreen(apps: List<AppInfo>) {
         )
     }
 
+    var warningText by remember {
+        mutableStateOf(
+            prefs.getString("warning", "5") ?: "5"
+        )
+    }
+
     val selected = remember {
 
         mutableStateListOf<String>().apply {
@@ -104,6 +110,20 @@ fun MonitorScreen(apps: List<AppInfo>) {
 
             },
             label = { Text("限制秒數") }
+        )
+
+        OutlinedTextField(
+            value = warningText,
+            onValueChange = {
+
+                warningText = it
+
+                prefs.edit()
+                    .putString("warning", it)
+                    .apply()
+
+            },
+            label = { Text("提醒秒數") }
         )
 
         Button(

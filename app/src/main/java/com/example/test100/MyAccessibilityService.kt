@@ -37,6 +37,12 @@ class MyAccessibilityService : AccessibilityService() {
                         emptySet()
                     ) ?: emptySet()
 
+                val warningTime =
+                    prefs.getString(
+                        "warning",
+                        "5"
+                    )?.toIntOrNull() ?: 5
+
                 val limitTime =
                     prefs.getString(
                         "limit",
