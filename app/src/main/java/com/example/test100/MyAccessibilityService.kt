@@ -2,6 +2,7 @@ package com.example.test100
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -12,8 +13,6 @@ class MyAccessibilityService : AccessibilityService() {
     private var currentApp = ""
 
     private var seconds = 0
-
-    private val warningTime = 5
 
     private var timerStarted = false
 
@@ -78,8 +77,7 @@ class MyAccessibilityService : AccessibilityService() {
                         Intent(Intent.ACTION_MAIN)
 
                     home.addCategory(
-                        Intent.CATEGORY_HOME
-                    )
+                        Intent.CATEGORY_HOME)
 
                     home.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK
@@ -130,38 +128,51 @@ class MyAccessibilityService : AccessibilityService() {
 
     private fun showWarningNotification() {
 
-        val manager =
-            getSystemService(
-                NOTIFICATION_SERVICE
-            ) as android.app.NotificationManager
+        try {
 
-        val channelId = "warn"
+            val manager =
+                getSystemService(
+                    NOTIFICATION_SERVICE
+                ) as NotificationManager
 
-        val channel =
-            android.app.NotificationChannel(
-                channelId,
-                "warning",
-                android.app.NotificationManager.IMPORTANCE_DEFAULT
-            )
+            if (!manager.areNotificationsEnabled()) {
+                return
+            }
 
-        manager.createNotificationChannel(channel)
+            val channelId = "warn"
 
-        val notification =
-            android.app.Notification.Builder(
-                this,
-                channelId
-            )
-                .setContentTitle("時間快到了")
-                .setContentText("請準備離開")
-                .setSmallIcon(
-                    android.R.drawable.ic_dialog_alert
+            val channel =
+                android.app.NotificationChannel(
+                    channelId,
+                    "warning",
+                    NotificationManager.IMPORTANCE_DEFAULT
                 )
-                .build()
 
-        manager.notify(
-            1,
-            notification
-        )
+            manager.createNotificationChannel(channel)
+
+            val notification =
+                android.app.Notification.Builder(
+                    this,
+                    channelId
+                )
+                    .setContentTitle("時間快到了")
+                    .setContentText("請準備離開")
+                    .setSmallIcon(
+                        android.R.drawable.ic_dialog_alert
+                    )
+                    .build()
+
+            manager.notify(
+                1,
+                notification
+            )
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+        }
+
     }
 
     override fun onInterrupt() {}
