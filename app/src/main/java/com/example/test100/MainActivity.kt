@@ -141,6 +141,26 @@ fun MonitorScreen(apps: List<AppInfo>) {
             Text("開啟無障礙")
         }
 
+        Button(
+            onClick = {
+
+                val intent =
+                    Intent(
+                        Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    )
+
+                intent.putExtra(
+                    Settings.EXTRA_APP_PACKAGE,
+                    context.packageName
+                )
+
+                context.startActivity(intent)
+
+            }
+        ) {
+            Text("開啟通知權限")
+        }
+
         Text("現在使用: $currentApp")
 
         LazyColumn(
