@@ -14,7 +14,6 @@ class MyAccessibilityService : AccessibilityService() {
     private var seconds = 0
 
     private val warningTime = 5
-    private val limitTime = 10
 
     private var timerStarted = false
 
@@ -37,6 +36,12 @@ class MyAccessibilityService : AccessibilityService() {
                         "apps",
                         emptySet()
                     ) ?: emptySet()
+
+                val limitTime =
+                    prefs.getString(
+                        "limit",
+                        "10"
+                    )?.toIntOrNull() ?: 10
 
                 prefs.edit()
                     .putString(
