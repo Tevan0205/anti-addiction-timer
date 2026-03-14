@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 
 class MyAccessibilityService : AccessibilityService() {
@@ -55,7 +56,12 @@ class MyAccessibilityService : AccessibilityService() {
                     )
                     .apply()
 
-                if (!selected.contains(currentApp)) {
+                val isSelected =
+                    selected.contains(currentApp)
+
+                Log.d("TEST100", "app=$currentApp selected=$isSelected sec=$seconds")
+
+                if (!isSelected) {
 
                     seconds = 0
 
@@ -67,17 +73,22 @@ class MyAccessibilityService : AccessibilityService() {
 
                 if (seconds == warningTime) {
 
+                    Log.d("TEST100", "warning")
+
                     showWarningNotification()
 
                 }
 
                 if (seconds >= limitTime) {
 
+                    Log.d("TEST100", "limit -> home")
+
                     val home =
                         Intent(Intent.ACTION_MAIN)
 
                     home.addCategory(
-                        Intent.CATEGORY_HOME)
+                        Intent.CATEGORY_HOME
+                    )
 
                     home.flags =
                         Intent.FLAG_ACTIVITY_NEW_TASK
@@ -96,6 +107,8 @@ class MyAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+
+        Log.d("TEST100", "service connected")
 
         val info = AccessibilityServiceInfo()
 
