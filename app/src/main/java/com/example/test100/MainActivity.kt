@@ -1,5 +1,6 @@
 package com.example.test100
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -94,9 +95,48 @@ fun MonitorScreen(apps: List<AppInfo>) {
 
     }
 
+    fun isAccessibilityEnabled(): Boolean {
+
+        val enabled =
+            Settings.Secure.getString(
+                context.contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            ) ?: return false
+
+        return enabled.contains(
+            context.packageName
+        )
+    }
+
+    fun isNotificationEnabled(): Boolean {
+
+        val manager =
+            context.getSystemService(
+                Context.NOTIFICATION_SERVICE
+            ) as NotificationManager
+
+        return manager.areNotificationsEnabled()
+    }
+
     Column(
         modifier = Modifier.padding(8.dp)
     ) {
+
+        Text(
+            "無障礙：" +
+                    if (isAccessibilityEnabled())
+                        "已開啟"
+                    else
+                        "未開啟"
+        )
+
+        Text(
+            "通知權限：" +
+                    if (isNotificationEnabled())
+                        "已開啟"
+                    else
+                        "未開啟"
+        )
 
         OutlinedTextField(
             value = limitText,
