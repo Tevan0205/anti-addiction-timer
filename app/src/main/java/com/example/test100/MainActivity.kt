@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -118,6 +119,18 @@ fun MonitorScreen(apps: List<AppInfo>) {
         return manager.areNotificationsEnabled()
     }
 
+    fun isIgnoringBattery(): Boolean {
+
+        val pm =
+            context.getSystemService(
+                Context.POWER_SERVICE
+            ) as PowerManager
+
+        return pm.isIgnoringBatteryOptimizations(
+            context.packageName
+        )
+    }
+
     Column(
         modifier = Modifier.padding(8.dp)
     ) {
@@ -136,6 +149,14 @@ fun MonitorScreen(apps: List<AppInfo>) {
                         "已開啟"
                     else
                         "未開啟"
+        )
+
+        Text(
+            "省電限制：" +
+                    if (isIgnoringBattery())
+                        "未限制"
+                    else
+                        "被限制"
         )
 
         OutlinedTextField(
@@ -199,6 +220,21 @@ fun MonitorScreen(apps: List<AppInfo>) {
             }
         ) {
             Text("開啟通知權限")
+        }
+
+        Button(
+            onClick = {
+
+                val intent =
+                    Intent(
+                        Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+                    )
+
+                context.startActivity(intent)
+
+            }
+        ) {
+            Text("開啟省電設定")
         }
 
         Text("現在使用: $currentApp")
