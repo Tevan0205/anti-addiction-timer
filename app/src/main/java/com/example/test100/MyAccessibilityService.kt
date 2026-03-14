@@ -137,6 +137,16 @@ class MyAccessibilityService : AccessibilityService() {
                 ?: return
 
         currentApp = pkg
+
+        if (!timerStarted) {
+
+            timerStarted = true
+
+            handler.post(timerRunnable)
+
+            Log.d("TEST100", "timer restarted")
+
+        }
     }
 
     private fun showWarningNotification() {
