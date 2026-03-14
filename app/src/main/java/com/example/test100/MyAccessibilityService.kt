@@ -136,6 +136,15 @@ class MyAccessibilityService : AccessibilityService() {
             event.packageName?.toString()
                 ?: return
 
+        if (
+            pkg.contains("launcher") ||
+            pkg.contains("inputmethod") ||
+            pkg.contains("systemui") ||
+            pkg == packageName
+        ) {
+            return
+        }
+
         currentApp = pkg
 
         if (!timerStarted) {
@@ -144,8 +153,10 @@ class MyAccessibilityService : AccessibilityService() {
 
             handler.post(timerRunnable)
 
-            Log.d("TEST100", "timer restarted")
-
+            android.util.Log.d(
+                "TEST100",
+                "timer restart"
+            )
         }
     }
 
