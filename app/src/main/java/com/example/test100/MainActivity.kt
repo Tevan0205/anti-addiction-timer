@@ -227,7 +227,14 @@ fun MonitorScreen(apps: List<AppInfo>) {
 
                 val intent =
                     Intent(
-                        Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    )
+
+                intent.data =
+                    android.net.Uri.fromParts(
+                        "package",
+                        context.packageName,
+                        null
                     )
 
                 context.startActivity(intent)
