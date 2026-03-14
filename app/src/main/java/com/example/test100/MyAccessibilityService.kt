@@ -137,9 +137,9 @@ class MyAccessibilityService : AccessibilityService() {
                 ?: return
 
         if (
-            pkg.contains("launcher") ||
-            pkg.contains("inputmethod") ||
-            pkg.contains("systemui") ||
+            pkg == "com.android.systemui" ||
+            pkg == "com.miui.home" ||
+            pkg == "com.google.android.inputmethod.latin" ||
             pkg == packageName
         ) {
             return
@@ -158,6 +158,11 @@ class MyAccessibilityService : AccessibilityService() {
                 "timer restart"
             )
         }
+
+        android.util.Log.d(
+            "TEST100",
+            "currentApp=$currentApp"
+        )
     }
 
     private fun showWarningNotification() {
